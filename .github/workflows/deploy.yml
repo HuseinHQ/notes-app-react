@@ -11,29 +11,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Step 1: Checkout code
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
+    # Step 2: Setup Node.js
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 18
 
+    # Step 3: Install dependencies
     - name: Install dependencies
       run: npm install
 
+    # Step 4: Build project
     - name: Build project
       run: npm run build
 
-    - name: Configure Git credentials
-      run: echo "//github.com/$(git config user.email).git" > ~/.netrc
-
+    # Step 5: Configure Git user identity
     - name: Configure Git user identity
       run: |
         git config --global user.email "mhusein463@gmail.com"
         git config --global user.name "HuseinHQ"
 
+    # Step 6: Deploy to GitHub Pages
     - name: Deploy to GitHub Pages
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         npm install -g gh-pages
-        gh-pages -d dist -b gh-pages
+        gh-pages -d dist
