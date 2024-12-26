@@ -38,7 +38,7 @@ jobs:
     # Step 6: Deploy to GitHub Pages
     - name: Deploy to GitHub Pages
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
         npm install -g gh-pages
         gh-pages -d dist
