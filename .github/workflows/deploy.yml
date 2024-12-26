@@ -1,37 +1,49 @@
-name: Deploy React + Vite to GitHub Pages
+name: Deploy
 
 on:
   push:
     branches:
-      - main  # Ganti dengan nama branch utama Anda jika berbeda
+      - main
 
 jobs:
-  build-and-deploy:
+  build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repository
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      # 2. Setup Node.js environment
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
-        with:
-          node-version: 16  # Pastikan versi Node.js sesuai dengan kebutuhan proyek Anda
 
-      # 3. Install dependencies
       - name: Install dependencies
-        run: npm install
+        uses: bahmutov/npm-install@v1
 
-      # 4. Build the project
       - name: Build project
         run: npm run build
 
-      # 5. Deploy to GitHub Pages
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v3
+        with:
+          name: production-files
+          path: ./dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: production-files
+          path: ./dist
+
       - name: Deploy to GitHub Pages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          npm install -g gh-pages
-          gh-pages -d dist
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
