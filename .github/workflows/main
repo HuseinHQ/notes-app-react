@@ -1,0 +1,46 @@
+name: CI for Vite React Project
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18" # Adjust based on your project's Node.js version
+          cache: "yarn"      # Use "npm" if your project uses npm
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          yarn install # Change to `npm install` if you're using npm
+
+      # Step 4: Run tests
+      - name: Run tests
+        run: |
+          yarn test # Adjust this command based on your testing setup
+
+      # Step 5: Build the project
+      - name: Build the project
+        run: |
+          yarn build # Change to `npm run build` if you're using npm
+
+      # Optional: Upload build artifacts
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: dist # Adjust based on your build output directory
